@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="kmeans.js"></script>
+</head>
+<body>
+	<p>
+		Number of particles: <input type="number" id="n_particles" value="30"><br>
+		Number of clusters: <input type="number" id="n_clusters" value="5"><br>
+		<button onclick="demo()">Make map</button>
+	</p>
+	
+	<canvas id="canvas_demo" width="800" height="500" style="background: #ffffff">
+	Your browser does not support the HTML5 canvas tag.
+	</canvas>
+
+	<script>
+		
+		function clear_canvas(canvas) {
+			var context = canvas.getContext("2d");
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = "#ffffff";
+			context.fillRect(0, 0, canvas.width, canvas.height);
+		}
+
+		function get_random_int(min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+		function draw_circle_in_context(particle, context, color) {
+			var radius = 4;	
+			context.beginPath();
+			context.arc(particle[0], particle[1], radius, 0, 2 * Math.PI, false);
+			context.fillStyle = color;
+			context.fill();
+		}
+
+		function draw_square_in_context(particle, context, color) {
+			context.beginPath();
+			context.lineWidth = "2";
+			context.strokeStyle = color;
+			context.rect(particle[0], particle[1], 10, 10);
+			context.stroke();
+		}
+
+		function demo() {
+			var n_particles = document.getElementById('n_particles').value;
+			var n_clusters = document.getElementById('n_clusters').value;
+			var canvas = document.getElementById("canvas_demo");
+			var context = canvas.getContext("2d");
+			var colors = [
+				'#ff0000',
+				'#00ff00',
+				'#0000ff',
+				'#ffff00',
+				'#ff00ff',
+				'#00ffff',
+				'#f0f0f0',
+				'#0f0f0f',
+				'#f0fff0',
+				'#fff0f0',
+				'#f0f0ff'
+			];
+
+			clear_canvas(canvas);
+			var particles = [];
+			var x, y, particle;
+			var m = 5;
+			for (var i = 0; i < n_particles; i++) {
+				x = get_random_int(0 + m, canvas.width - m);
+				y = get_random_int(0 + m, canvas.height - m);
+				particle = [x, y]
+				particles.push(particle);
+			}
+
+			var kmeans = new Kmeans(n_clusters);
+			var res = kmeans.get_clusters(particles);
+			var clusters = res[0];
+			var centroids = res[1];
+			var color;
+			for (var i = 0; i < particles.length; i++) {
+				color = colors[clusters[i]];
+				draw_circle_in_context(particles[i], context, color);
+			}
+			for (var i = 0; i < centroids.length; i++) {
+				color = colors[i];
+				draw_square_in_context(particles[i], context, color);
+			}
+
+
+		}
+	</script>
+
+</body>
+</html>
