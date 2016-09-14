@@ -19,7 +19,7 @@
 		function clear_canvas(canvas) {
 			var context = canvas.getContext("2d");
 			context.clearRect(0, 0, canvas.width, canvas.height);
-			context.fillStyle = "#ffffff";
+			context.fillStyle = "#000000";
 			context.fillRect(0, 0, canvas.width, canvas.height);
 		}
 
@@ -35,11 +35,19 @@
 			context.fill();
 		}
 
-		function draw_square_in_context(particle, context, color) {
+		function draw_cross_in_context(particle, context, color) {
+			var x = particle[0];
+			var y = particle[1];
+			var l = 6;
+
 			context.beginPath();
-			context.lineWidth = "2";
 			context.strokeStyle = color;
-			context.rect(particle[0], particle[1], 10, 10);
+			context.lineWidth = "1";
+
+			context.moveTo(x - l, y);
+			context.lineTo(x + l, y);
+			context.moveTo(x, y - l);
+			context.lineTo(x, y + l);
 			context.stroke();
 		}
 
@@ -50,16 +58,15 @@
 			var context = canvas.getContext("2d");
 			var colors = [
 				'#ff0000',
-				'#00ff00',
-				'#0000ff',
-				'#ffff00',
-				'#ff00ff',
-				'#00ffff',
-				'#f0f0f0',
-				'#0f0f0f',
-				'#f0fff0',
-				'#fff0f0',
-				'#f0f0ff'
+				'#ccff00',
+				'#00ff66',
+				'#0066ff',
+				'#cc00ff',
+				'#0ea7b5',
+				'#0c457d',
+				'#e8702a',
+				'#e0cda7',
+				'#6b4423'
 			];
 
 			clear_canvas(canvas);
@@ -79,12 +86,14 @@
 			var centroids = res[1];
 			var color;
 			for (var i = 0; i < particles.length; i++) {
-				color = colors[clusters[i]];
+				var color_idx = (clusters[i] + colors.length) % colors.length;
+				color = colors[color_idx];
 				draw_circle_in_context(particles[i], context, color);
 			}
 			for (var i = 0; i < centroids.length; i++) {
-				color = colors[i];
-				draw_square_in_context(particles[i], context, color);
+				var color_idx = (i + colors.length) % colors.length;
+				color = colors[color_idx];
+				draw_cross_in_context(centroids[i], context, color);
 			}
 
 
